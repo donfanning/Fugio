@@ -15,7 +15,7 @@
 #include <fugio/math/uuid.h>
 #include <fugio/core/uuid.h>
 
-#include <fugio/image/image_interface.h>
+#include <fugio/image/image.h>
 
 #include "luapainter.h"
 #include "luapen.h"
@@ -92,7 +92,7 @@ LuaQtPlugin::LuaQtPlugin()
 
 	static QTranslator		Translator;
 
-	if( Translator.load( QLocale(), QLatin1String( "fugio_luaqt" ), QLatin1String( "_" ), ":/translations" ) )
+	if( Translator.load( QLocale(), QLatin1String( "translations" ), QLatin1String( "_" ), ":/" ) )
 	{
 		qApp->installTranslator( &Translator );
 	}

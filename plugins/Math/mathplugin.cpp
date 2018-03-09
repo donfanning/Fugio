@@ -92,6 +92,10 @@
 
 #include "pointtransformnode.h"
 #include "pownode.h"
+#include "numberarraynode.h"
+#include "transformnode.h"
+#include "sumnode.h"
+#include "booleanlatchnode.h"
 
 MathPlugin *MathPlugin::mInstance = nullptr;
 
@@ -105,6 +109,7 @@ ClassEntry	NodeClasses[] =
 	ClassEntry( "AND Bits", "Logic", NID_AND_BITS, &AndBitsNode::staticMetaObject ),
 	ClassEntry( "ArcCos", "Number", NID_ARCCOS, &ArcCosNode::staticMetaObject ),
 	ClassEntry( "Bits To Pins", "Math", NID_BITS_TO_PINS, &BitsToPinsNode::staticMetaObject ),
+	ClassEntry( "Boolean Latch", "Math", NID_BOOLEAN_LATCH, &BooleanLatchNode::staticMetaObject ),
 	ClassEntry( "Compare", "Number", NID_COMPARE_NUMBERS, &CompareNumbersNode::staticMetaObject ),
 	ClassEntry( "Cross Product", "Vector3", NID_CROSS_PRODUCT, &CrossProductNode::staticMetaObject ),
 	ClassEntry( "Radians to Degrees", "Number", NID_RADIANS_TO_DEGREES, &RadiansToDegreesNode::staticMetaObject ),
@@ -132,6 +137,7 @@ ClassEntry	NodeClasses[] =
 	ClassEntry( "NOT Bits", "Logic", NID_NOT_BITS, &NotBitsNode::staticMetaObject ),
 	ClassEntry( "NOR", "Logic", NID_NOR, &NorNode::staticMetaObject ),
 	ClassEntry( "Normalise", "Vector3", NID_NORMALISE, &NormaliseNode::staticMetaObject ),
+	ClassEntry( "Number Array", NID_NUMBER_ARRAY, &NumberArrayNode::staticMetaObject ),
 	ClassEntry( "OR", "Logic", NID_OR, &OrNode::staticMetaObject ),
 	ClassEntry( "OR Bits", "Logic", NID_OR_BITS, &OrBitsNode::staticMetaObject ),
 	ClassEntry( "Orthographic", "Matrix", NID_MATRIX_ORTHOGRAPHIC, &MatrixOrthographicNode::staticMetaObject ),
@@ -148,6 +154,8 @@ ClassEntry	NodeClasses[] =
 	ClassEntry( "Split", "Vector3", NID_SPLIT_VECTOR3, &SplitVector3Node::staticMetaObject ),
 	ClassEntry( "Split", "Vector4", NID_SPLIT_VECTOR4, &SplitVector4Node::staticMetaObject ),
 	ClassEntry( "Subtract", "Math", NID_SUBTRACT, &SubtractNode::staticMetaObject ),
+	ClassEntry( "Sum", "Math", NID_SUM, &SumNode::staticMetaObject ),
+	ClassEntry( "Transform", "Math", NID_TRANSFORM, &TransformNode::staticMetaObject ),
 	ClassEntry( "Translate", "Matrix", NID_MATRIX_TRANSLATE, &MatrixTranslateNode::staticMetaObject ),
 	ClassEntry( "Vector3", "GUI", NID_VECTOR3, &Vector3Node::staticMetaObject ),
 	ClassEntry( "XNOR", "Logic", NID_XNOR, &XnorNode::staticMetaObject ),
@@ -174,7 +182,7 @@ MathPlugin::MathPlugin() : mApp( 0 )
 
 	static QTranslator		Translator;
 
-	if( Translator.load( QLocale(), QLatin1String( "fugio_math" ), QLatin1String( "_" ), ":/translations" ) )
+	if( Translator.load( QLocale(), QLatin1String( "translations" ), QLatin1String( "_" ), ":/" ) )
 	{
 		qApp->installTranslator( &Translator );
 	}
@@ -197,6 +205,9 @@ PluginInterface::InitResult MathPlugin::initialise( fugio::GlobalInterface *pApp
 
 	mApp->registerPinJoiner( PID_VECTOR3, NID_JOIN_VECTOR3 );
 	mApp->registerPinJoiner( PID_VECTOR4, NID_JOIN_VECTOR4 );
+
+	mApp->registerPinForMetaType( PID_VECTOR3, QMetaType::QVector3D );
+	mApp->registerPinForMetaType( PID_VECTOR4, QMetaType::QVector4D );
 
 	return( INIT_OK );
 }

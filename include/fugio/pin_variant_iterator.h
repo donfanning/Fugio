@@ -27,57 +27,100 @@ public:
 		{
 			mValue = pPin->value();
 		}
-	}
 
-	int size( void ) const
-	{
-		if( mList )
-		{
-			return( mList->listSize() );
-		}
-
-		if( mVariant || mValue.isValid() )
-		{
-			return( 1 );
-		}
-
-		return( 0 );
+		mCount = calcCount();
+		mType = calcType();
+		mIsEmpty = calcisEmpty();
 	}
 
 	QVariant index( int pIndex ) const
 	{
 		if( mList )
 		{
-			return( mList->listIndex( pIndex ) );
+			return( mIsEmpty ? QVariant() : mList->listIndex( pIndex % mCount ) );
 		}
 
-		if( pIndex )
-		{
-			return( QVariant() );
-		}
-
-		return( mVariant ? mVariant->variant() : mValue );
+		return( mVariant ? mVariant->variant( pIndex % mCount ) : mValue );
 	}
 
-	bool isEmpty( void ) const
+	inline int count( void ) const
+	{
+		return( mCount );
+	}
+
+	inline bool isEmpty( void ) const
+	{
+		return( mIsEmpty );
+	}
+
+	inline QMetaType::Type type( void ) const
+	{
+		return( mType );
+	}
+
+	inline QVariant size( int pIndex )
+	{
+		if( mList )
+		{
+			return( mList->listSize() );
+		}
+
+		return( mVariant ? mVariant->variantSize( pIndex % mCount ) : mCount );
+	}
+
+private:
+	int calcCount( void ) const
+	{
+		if( mList )
+		{
+			return( mList->listSize() );
+		}
+
+		if( mVariant )
+		{
+			return( mVariant->variantCount() );
+		}
+
+		return( mValue.isValid() ? 1 : 0 );
+	}
+
+	bool calcisEmpty( void ) const
 	{
 		if( mList )
 		{
 			return( mList->listIsEmpty() );
 		}
 
-		if( mVariant || mValue.isValid() )
+		if( mVariant )
 		{
-			return( false );
+			return( !mVariant->variantCount() );
 		}
 
-		return( true );
+		return( !mValue.isValid() );
+	}
+
+	QMetaType::Type calcType( void ) const
+	{
+		if( mList )
+		{
+			return( mList->listType() );
+		}
+
+		if( mVariant )
+		{
+			return( mVariant->variantType() );
+		}
+
+		return( QMetaType::Type( mValue.userType() ) );
 	}
 
 protected:
 	fugio::VariantInterface		*mVariant;
 	fugio::ListInterface		*mList;
 	QVariant					 mValue;
+	QMetaType::Type				 mType;
+	int							 mCount;
+	bool						 mIsEmpty;
 };
 
 FUGIO_NAMESPACE_END

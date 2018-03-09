@@ -14,6 +14,7 @@
 #include "imagesizenode.h"
 #include "imagefilternode.h"
 #include "imagesavenode.h"
+#include "copynode.h"
 
 #include "painterwindownode.h"
 
@@ -27,6 +28,7 @@ using namespace fugio;
 ClassEntry		mNodeClasses[] =
 {
 	ClassEntry( "Colour Mask", "Image", NID_COLOUR_MASK, &ColourMaskNode::staticMetaObject ),
+	ClassEntry( "Copy", "Image", NID_IMAGE_COPY, &CopyNode::staticMetaObject ),
 	ClassEntry( "Filter", "Image", NID_IMAGE_FILTER, &ImageFilterNode::staticMetaObject ),
 	ClassEntry( "Grab Screen", "Image", NID_GRAB_SCREEN, &GrabScreenNode::staticMetaObject ),
 	ClassEntry( "Image", "Image", NID_IMAGE, &ImageNode::staticMetaObject ),
@@ -54,7 +56,7 @@ ImagePlugin::ImagePlugin()
 
 	static QTranslator		Translator;
 
-	if( Translator.load( QLocale(), QLatin1String( "fugio_image" ), QLatin1String( "_" ), ":/translations" ) )
+	if( Translator.load( QLocale(), QLatin1String( "translations" ), QLatin1String( "_" ), ":/" ) )
 	{
 		qApp->installTranslator( &Translator );
 	}
@@ -69,6 +71,8 @@ PluginInterface::InitResult ImagePlugin::initialise( fugio::GlobalInterface *pAp
 	mApp->registerNodeClasses( mNodeClasses );
 
 	mApp->registerPinClasses( mPinClasses );
+
+	mApp->registerPinForMetaType( PID_IMAGE, QMetaType::Type( qMetaTypeId<fugio::Image>() ) );
 
 	return( INIT_OK );
 }
